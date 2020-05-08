@@ -1,7 +1,7 @@
 {
-    "name": "PDF Side By Side",
-    "short_name": "PDF Side By Side",
-    "description": "PDF Side By Side",
+    "name": "PDF Diff Viewer",
+    "short_name": "PDF Diff Viewer",
+    "description": "PDF Diff Viewer",
     "icons": [
         {
             "src": "\/static\/android-icon.png",

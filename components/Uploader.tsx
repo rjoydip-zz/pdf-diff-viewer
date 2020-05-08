@@ -1,21 +1,26 @@
 import React from 'react'
 import Dropzone from 'react-dropzone'
 
-import { loop } from '../utils'
-
-const Uploader = ({ onUpload = loop, className = '' }) => {
+const Uploader = ({
+  onUpload,
+  className,
+}: {
+  onUpload?: Function
+  className?: string
+}) => {
   return (
     <Dropzone
       onDrop={(files: any) => {
         const reader = new FileReader()
         reader.onload = () => {
-          onUpload(reader.result)
+          const result = reader.result
+          onUpload ? onUpload(result) : null
         }
         reader.readAsArrayBuffer(files[0])
       }}
     >
       {({ getRootProps, getInputProps }) => (
-        <div className={className} {...getRootProps()}>
+        <div className={className || ''} {...getRootProps()}>
           <input {...getInputProps()} />
           <p>
             Drag and drop your files anywhere or

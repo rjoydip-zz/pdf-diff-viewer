@@ -1,4 +1,4 @@
-name: PDF Side By Side build
+name: PDF Diff Viewer build
 on:
   push:
     branches:

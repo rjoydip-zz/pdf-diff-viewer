@@ -1,6 +1,6 @@
-# pdf-side-by-side
+# pdf-diff-viewer
 
-PDF Side By Side
+PDF Diff Viewer
 
 ## Features
 

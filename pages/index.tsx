@@ -20,7 +20,7 @@ export default () => {
 
   return (
     <Layout>
-      <Title>PDF Side By Side</Title>
+      <Title>PDF Diff Viewer</Title>
       <Viewer />
     </Layout>
   )

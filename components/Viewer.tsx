@@ -1,15 +1,14 @@
 import { NextPage } from 'next'
-import { Document, Page, pdfjs } from 'react-pdf'
 import { connect } from 'unistore/react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
-
-import { If } from './extras'
+import If from './extras/If'
 import { Uploader } from './Uploader'
 import actions from '../lib/redux/actions'
+import Document from './Document'
+import Page from './Page'
 
-const DiffView = connect<
+/* const DiffView = connect<
   {
     id: string
   },
@@ -34,7 +33,7 @@ const DiffView = connect<
       </If>
     </div>
   )
-})
+}) */
 
 const UploaderAndViewer = connect<
   {
@@ -52,12 +51,7 @@ const UploaderAndViewer = connect<
     original,
     compare,
     setFile,
-    setImage,
-    pageNumber,
-    setPageNumber,
-    setNumberOfPages,
   }: any) => {
-    let pageRef: any = null
     const file =
       id === 'original' ? original.file : id === 'compare' ? compare.file : null
     return (
@@ -71,31 +65,9 @@ const UploaderAndViewer = connect<
         <If condition={file}>
           <Document
             file={file}
-            onSourceSuccess={setPageNumber}
-            onLoadSuccess={({ numPages }: any) =>
-              setNumberOfPages({ id, numPages })
-            }
             className="outline-none shadow-lg max-h-xs max-w-xs"
           >
-            <Page
-              scale={0.5}
-              renderMode="canvas"
-              inputRef={(ref) => (pageRef = ref)}
-              pageNumber={pageNumber}
-              onLoadSuccess={(_) => {
-                const canvasRef: any = Object.values(pageRef.children).filter(
-                  (i: any) => i.className === 'react-pdf__Page__canvas'
-                )
-                .pop()
-                setImage({ id, img: canvasRef && canvasRef.toDataURL() })
-              }}
-              onRenderSuccess={async () => {
-                 if (original.img) {
-                  setImage({ id: 'difference', img: original.img })
-                }
-              }}
-              error={<div>Page not found</div>}
-            />
+            <Page />
           </Document>
         </If>
       </div>
@@ -143,9 +115,9 @@ const Viewer: NextPage<{}> = connect(
       <div className="flex flex-row justify-center">
         <PageNavigate />
       </div>
-      <div className="flex flex-row justify-center m-2">
+      {/* <div className="flex flex-row justify-center m-2">
         <DiffView id="difference" />
-      </div>
+      </div> */}
     </div>
   )
 })

@@ -1,5 +1,7 @@
 # pdf-diff-viewer
 
+![PDF Diff Viewer build](https://github.com/rjoydip/pdf-diff-viewer/workflows/PDF%20Diff%20Viewer%20build/badge.svg)
+
 PDF Diff Viewer
 
 ## Features

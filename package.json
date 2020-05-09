@@ -24,9 +24,7 @@
     "react-dom": "github:preact-compat/react-dom#1.0.0",
     "react-dropzone": "^11.0.1",
     "react-icons": "^3.10.0",
-    "react-pdf": "^4.1.0",
     "react-ssr-prepass": "npm:preact-ssr-prepass@^1.0.1",
-    "react-use": "^14.2.0",
     "styled-components": "^5.1.0",
     "tailwindcss": "^1.4.1",
     "unistore": "^3.5.1"

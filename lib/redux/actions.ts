@@ -1,59 +1,40 @@
-const actions = (_: any) => ({
+import produce from 'immer'
+
+const actions = () => ({
   incrementPageNumber(state: any) {
-    const maxPageNumber = Math.max(
-      state.original.numPages,
-      state.compare.numPages
-    )
-    return {
-      ...state,
-      pageNumber:
-        state.pageNumber >= 1 && state.pageNumber < maxPageNumber
+    return produce(state, (draft: any) => {
+      draft.pageNumber =
+        state.pageNumber >= 1 &&
+        state.pageNumber <
+          Math.max(state.original.numPages, state.compare.numPages)
           ? state.pageNumber + 1
-          : state.pageNumber,
-    }
+          : state.pageNumber
+    })
   },
   decrementPageNumber(state: any) {
-    return {
-      ...state,
-      pageNumber:
-        state.pageNumber > 1 ? state.pageNumber - 1 : state.pageNumber,
-    }
+    return produce(state, (draft: any) => {
+      draft.pageNumber =
+        state.pageNumber > 1 ? state.pageNumber - 1 : state.pageNumber
+    })
   },
-  setPageNumber(state: any, payLoad: any) {
-    return {
-      ...state,
-      pageNumber: payLoad || 1,
-    }
-  },
-  setNumberOfPages(state: any, payLoad: any) {
-    const { id, numPages } = payLoad
-    return {
-      ...state,
-      [id]: {
-        ...state[id],
-        numPages,
-      },
-    }
+  setInfo(state: any, payLoad: any) {
+    const { id, numPages, pageNumber } = payLoad
+    return produce(state, (draft: any) => {
+      draft.pageNumber = pageNumber
+      draft[id].numPages = numPages
+    })
   },
   setFile(state: any, payLoad: any) {
     const { id, file } = payLoad
-    return {
-      ...state,
-      [id]: {
-        ...state[id],
-        file,
-      },
-    }
+    return produce(state, (draft: any) => {
+      draft[id].file = file
+    })
   },
   setImage(state: any, payLoad: any) {
     const { id, img } = payLoad
-    return {
-      ...state,
-      [id]: {
-        ...state[id],
-        img,
-      },
-    }
+    return produce(state, (draft: any) => {
+      draft[id].img = img
+    })
   },
 })
 

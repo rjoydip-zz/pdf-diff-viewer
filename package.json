@@ -15,6 +15,7 @@
     "watch-css": "postcss tailwind.css -o index.css -w"
   },
   "dependencies": {
+    "immer": "^6.0.5",
     "jimp": "^0.10.3",
     "next": "latest",
     "pdfjs-dist": "^2.3.200",
@@ -25,7 +26,6 @@
     "react-dropzone": "^11.0.1",
     "react-icons": "^3.10.0",
     "react-ssr-prepass": "npm:preact-ssr-prepass@^1.0.1",
-    "react-use": "^14.2.0",
     "styled-components": "^5.1.0",
     "tailwindcss": "^1.4.1",
     "unistore": "^3.5.1"

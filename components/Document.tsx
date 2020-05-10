@@ -1,4 +1,3 @@
-import { useAsync } from 'react-use'
 import pdfjs, { PDFDataRangeTransport } from 'pdfjs-dist'
 import {
   isDataURI,
@@ -8,9 +7,10 @@ import {
   isBlob,
   isFile,
   loadFromFile,
+  loop,
 } from '../utils'
-import Context from './extras/Context'
-import Choose from './extras/Choose'
+import { ContextProvider, Choose } from './extras'
+import { useAsync } from '../hooks'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
 
@@ -77,39 +77,34 @@ const findDocumentSource = async (file: any) => {
   return file
 }
 
-const loadDocument = async ({ url }: any) => {
-  const loadPDF = await pdfjs.getDocument(url).promise
-  return {
-    pdf: loadPDF,
-    numPages: loadPDF.numPages
-  }
-}
-
 const Document = ({
   file,
   children,
+  onLoadSuccess = loop,
 }: {
   file: FileReader | ArrayBuffer | Buffer | string
   className?: string
   children?: React.ReactNode
+  onLoadSuccess?: (args: any) => void
 }) => {
-  const state = useAsync(async () => {
+  const state = useAsync<any>(async () => {
     const { data } = await findDocumentSource(file)
-    return await loadDocument({
-      url: data,
-    })
+    const loadPDF = await pdfjs.getDocument(data).promise
+    return {
+      pdf: loadPDF,
+      numPages: loadPDF.numPages,
+    }
   }, [])
+  
+  if (!state.loading && state.value) onLoadSuccess(state.value)
+  
   return (
     <Choose>
       <Choose.When condition={state.loading}>
         <h1>Loading 😎</h1>
       </Choose.When>
       <Choose.Otherwise>
-        <Context.Provider
-          value={{...state}}
-        >
-          {children}
-        </Context.Provider>
+        <ContextProvider value={{ ...state.value }}>{children}</ContextProvider>
       </Choose.Otherwise>
     </Choose>
   )

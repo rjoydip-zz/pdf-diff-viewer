@@ -1,3 +1,11 @@
-import { createContext } from 'react';
+import { createContext } from 'react'
 
-export default createContext({});
+export interface ContextInterface {
+  pdf: any,
+  numPages: number
+}
+
+const ctx = createContext<ContextInterface | null>(null)
+
+export const ContextProvider = ctx.Provider
+export const ContextConsumer = ctx.Consumer

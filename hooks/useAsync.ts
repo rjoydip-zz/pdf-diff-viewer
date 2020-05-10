@@ -1,19 +1,36 @@
 import { DependencyList, useEffect, useState } from 'react'
+import { AsyncState } from './useAsyncFn'
 
-export default function useAsync<T, Args extends any[] = any[]>(
-  fn: (...args: Args | any[]) => Promise<T> | undefined | null,
+function useAsync<Result = any, Args extends any[] = any[]>(
+  fn: (...args: Args | any[]) => Promise<Result> | undefined | null,
   deps: DependencyList = []
-): T | object {
-  const [val, setVal] = useState<T | object>({ loading: true })
+): AsyncState<Result> {
+  const [val, setVal] = useState<AsyncState<Result>>({
+    loading: true,
+    value: null,
+    error: null,
+  })
   useEffect(() => {
     const promise = fn()
     if (promise === undefined || promise === null) return
-    promise.then((value) =>
-      setVal({
-        value,
-        loading: false,
-      })
-    )
+    promise
+      .then((value) =>
+        setVal({
+          value,
+          error: null,
+          loading: false,
+        })
+      )
+      .catch((error) =>
+        setVal({
+          error,
+          value: null,
+          loading: false,
+        })
+      )
   }, deps)
   return val
 }
+
+export { useAsync }
+export default useAsync

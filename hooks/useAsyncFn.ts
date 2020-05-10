@@ -22,7 +22,7 @@ export type AsyncFn<Result = any, Args extends any[] = any[]> = [
   (...args: [] | Args) => void
 ]
 
-export default function useAsyncFn<Result = any, Args extends any[] = any[]>(
+function useAsyncFn<Result = any, Args extends any[] = any[]>(
   fn: (...args: Args | any[]) => Promise<Result>,
   deps: DependencyList = []
 ): AsyncFn<Result, Args> {
@@ -37,14 +37,16 @@ export default function useAsyncFn<Result = any, Args extends any[] = any[]>(
     promise
       .then((value) => {
         setState({
-          ...value,
+          value,
+          error: null,
           loading: false,
         })
         return state
       })
       .catch((error) => {
         setState({
-          ...error,
+          error,
+          value: null,
           loading: false,
         })
         return state
@@ -52,3 +54,6 @@ export default function useAsyncFn<Result = any, Args extends any[] = any[]>(
   }, deps)
   return [state, callback]
 }
+
+export { useAsyncFn }
+export default useAsyncFn

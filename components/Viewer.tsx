@@ -2,78 +2,11 @@ import { NextPage } from 'next'
 import { connect } from 'unistore/react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
-import If from './extras/If'
-import { Uploader } from './Uploader'
 import actions from '../lib/redux/actions'
+import { Uploader } from './Uploader'
 import Document from './Document'
 import Page from './Page'
-
-/* const DiffView = connect<
-  {
-    id: string
-  },
-  {},
-  {},
-  {}
->(
-  ['pageNumber', 'difference'],
-  actions
-)(({ id = '', difference }: any) => {
-  const { img } = difference
-  return (
-    <div id={id}>
-      <If condition={img}>
-        <img
-          src={img}
-          alt={''}
-          height={300}
-          width={300}
-          className="border-solid border-2 border-gray-600"
-        />
-      </If>
-    </div>
-  )
-}) */
-
-const UploaderAndViewer = connect<
-  {
-    id: string
-  },
-  {},
-  {},
-  {}
->(
-  ['original', 'compare', 'pageNumber'],
-  actions
-)(
-  ({
-    id = '',
-    original,
-    compare,
-    setFile,
-  }: any) => {
-    const file =
-      id === 'original' ? original.file : id === 'compare' ? compare.file : null
-    return (
-      <div id={id} className="flex flex-row">
-        <If condition={!file}>
-          <Uploader
-            onUpload={(file: FileReader) => setFile({ id, file })}
-            className="p-6 text-center text-sm border-solid outline-none shadow-lg"
-          />
-        </If>
-        <If condition={file}>
-          <Document
-            file={file}
-            className="outline-none shadow-lg max-h-xs max-w-xs"
-          >
-            <Page />
-          </Document>
-        </If>
-      </div>
-    )
-  }
-)
+import { Choose } from './extras'
 
 const PageNavigate = connect(
   ['original', 'compare', 'pageNumber'],
@@ -102,22 +35,92 @@ const PageNavigate = connect(
   }
 )
 
+const DocPage = connect<{}, {}, {}, {}>(
+  ['pageNumber'],
+  actions
+)(({ pageNumber }: any) => {
+  console.log(444)
+  return <Page pageNumber={pageNumber} />
+})
+
+const OriginalUploader = connect(
+  ['original'],
+  actions
+)(({ original, setFile, setInfo }: any) => {
+  console.log(222)
+  return (
+    <Choose>
+      <Choose.When condition={!!original.file}>
+        <Document
+          file={original.file}
+          className="outline-none shadow-lg max-h-xs max-w-xs"
+          onLoadSuccess={({ numPages }) => {
+            setInfo({
+              id: 'original',
+              numPages: numPages,
+              pageNumber: 1,
+            })
+          }}
+        >
+          <DocPage />
+        </Document>
+      </Choose.When>
+      <Choose.Otherwise>
+        <Uploader
+          onUpload={(file: FileReader) => setFile({ id: 'original', file })}
+          className="p-6 text-center text-sm border-solid outline-none shadow-lg"
+        />
+      </Choose.Otherwise>
+    </Choose>
+  )
+})
+
+const CompareUploader = connect(
+  ['compare'],
+  actions
+)(({ compare, setFile, setInfo }: any) => {
+  console.log(333)
+  return (
+    <Choose>
+      <Choose.When condition={!!compare.file}>
+        <Document
+          file={compare.file}
+          className="outline-none shadow-lg max-h-xs max-w-xs"
+          onLoadSuccess={({ numPages }) => {
+            setInfo({
+              id: 'compare',
+              numPages: numPages,
+              pageNumber: 1,
+            })
+          }}
+        >
+          <DocPage />
+        </Document>
+      </Choose.When>
+      <Choose.Otherwise>
+        <Uploader
+          onUpload={(file: FileReader) => setFile({ id: 'compare', file })}
+          className="p-6 text-center text-sm border-solid outline-none shadow-lg"
+        />
+      </Choose.Otherwise>
+    </Choose>
+  )
+})
+
 const Viewer: NextPage<{}> = connect(
   [],
   actions
 )(({}: any) => {
+  console.log(111)
   return (
     <div className="flex flex-col">
       <div className="flex flex-row justify-center m-2">
-        <UploaderAndViewer id="original" />
-        <UploaderAndViewer id="compare" />
+        <OriginalUploader />
+        <CompareUploader />
       </div>
       <div className="flex flex-row justify-center">
         <PageNavigate />
       </div>
-      {/* <div className="flex flex-row justify-center m-2">
-        <DiffView id="difference" />
-      </div> */}
     </div>
   )
 })

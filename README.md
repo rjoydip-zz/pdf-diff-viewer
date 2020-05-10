@@ -12,6 +12,7 @@ PDF Diff Viewer
 - [tailwindcss](https://tailwindcss.com/)
 - [postcss](https://postcss.org/)
 - [unistore](https://www.npmjs.com/package/unistore)
+- [immer](https://immerjs.github.io/immer/docs/introduction)
 - [with-styled-components](https://github.com/zeit/next.js/tree/canary/examples/with-styled-components)
 
 Install it and run:

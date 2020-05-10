@@ -1,8 +1,8 @@
 import createStore from 'unistore'
 
-// const pngB64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII='
+// 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
 
-const _p = {
+const ref = {
   file: null,
   img: null,
   numPages: 0,
@@ -10,11 +10,9 @@ const _p = {
 
 const initialState = {
   pageNumber: 0,
-  compare: _p,
-  original: _p,
-  difference: {
-    img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
-  },
+  compare: ref,
+  original: ref,
+  difference: ref,
 }
 
 export default () => createStore(initialState)

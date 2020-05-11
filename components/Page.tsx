@@ -1,5 +1,6 @@
+import { serializeError } from 'serialize-error'
 import { ContextConsumer, ContextInterface } from './extras'
-import { getPixelRatio, loop } from '../utils'
+import { getPixelRatio } from '../utils'
 
 interface PageProps {
   width?: number
@@ -9,11 +10,8 @@ interface PageProps {
   unit?: string
   className?: string
   pixelRatio?: number
-  pageNumber?: number
-  renderInteractiveForms?: boolean
-  inputRef?: (args: any) => void
-  onLoadError?: (args: any) => void
-  onLoadSuccess?: (args: any) => void
+  pageNumber: number
+  exportImage?: boolean
 }
 
 const PageInternal = ({
@@ -24,63 +22,69 @@ const PageInternal = ({
   pdf,
   unit,
   pixelRatio,
-  renderInteractiveForms = false,
   scale,
   rotate,
-  pageNumber = 1,
-  onLoadError = loop,
-  onLoadSuccess = loop,
+  pageNumber,
+  exportImage = false,
+  onLoadError,
+  onLoadSuccess,
 }: PageProps & ContextInterface) => {
-  const cb = async (ref: any) => {
+  const fn = async (canvasRef: any) => {
+    const ctx = canvasRef.getContext('2d')
+    const image = exportImage ? canvasRef.toDataURL() : null
+    canvasRef.style.width = `${Math.floor(width)}${unit || 'px'}`
+    canvasRef.style.height = `${Math.floor(height)}${unit || 'px'}`
     try {
-      const canvas = ref
       const page = await pdf.getPage(pageNumber)
       const renderViewport = page.getViewport({
         scale: (scale || 1.5) * (pixelRatio || getPixelRatio()),
         rotate: rotate || 180,
       })
 
-      canvas.width = renderViewport.width
-      canvas.height = renderViewport.height
-
-      canvas.style.width = `${Math.floor(width)}${unit || 'px'}`
-      canvas.style.height = `${Math.floor(height)}${unit || 'px'}`
+      canvasRef.width = renderViewport.width
+      canvasRef.height = renderViewport.height
 
       await page.render({
-        canvasContext: canvas.getContext('2d'),
+        canvasContext: ctx,
         viewport: renderViewport,
-        renderInteractiveForms,
       }).promise
 
-      onLoadSuccess({
-        pdf: {
+      onLoadSuccess &&
+        onLoadSuccess({
+          pdf: {
+            page,
+            image,
+          },
           numPages,
-          pageNumber,
-        },
-        ref: {
-          canvas,
-        },
-      })
+          canvas: canvasRef,
+        })
     } catch (error) {
-      onLoadError(error)
+      const serialized = serializeError(error)
+      if (serialized.message === 'Invalid page request') {
+        ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
+        ctx.textAlign = 'center'
+        ctx.font = "10px Arial";
+        ctx.fillText('No page found', canvasRef.width / 2, canvasRef.height / 2)
+      }
+      onLoadError && onLoadError(error)
     }
   }
 
   return (
     <canvas
-      ref={cb}
+      ref={(ref: any) => ref && fn(ref)}
       className={className}
       style={{ width, height, display: 'block' }}
     />
   )
 }
 
-const Page = (props: PageProps) => {
-  return (
-    <ContextConsumer>
-      {(context: any) => <PageInternal {...props} {...context} />}
-    </ContextConsumer>
-  )
-}
+const Page = (props: PageProps) => (
+  <ContextConsumer>
+    {(context: any) => {
+      return <PageInternal {...props} {...context} />
+    }}
+  </ContextConsumer>
+)
 
 export default Page

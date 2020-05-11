@@ -18,9 +18,9 @@ const actions = () => ({
     })
   },
   setInfo(state: any, payLoad: any) {
-    const { id, numPages, pageNumber } = payLoad
+    const { id, numPages, image } = payLoad
     return produce(state, (draft: any) => {
-      draft.pageNumber = pageNumber
+      draft[id].image = image
       draft[id].numPages = numPages
     })
   },

@@ -7,7 +7,6 @@ import {
   isBlob,
   isFile,
   loadFromFile,
-  loop,
 } from '../utils'
 import { ContextProvider, Choose } from './extras'
 import { useAsync } from '../hooks'
@@ -77,34 +76,25 @@ const findDocumentSource = async (file: any) => {
   return file
 }
 
-const Document = ({
-  file,
-  children,
-  onLoadSuccess = loop,
-}: {
-  file: FileReader | ArrayBuffer | Buffer | string
-  className?: string
-  children?: React.ReactNode
-  onLoadSuccess?: (args: any) => void
-}) => {
+const Document = (props: any) => {
   const state = useAsync<any>(async () => {
-    const { data } = await findDocumentSource(file)
+    const { data } = await findDocumentSource(props.file)
     const loadPDF = await pdfjs.getDocument(data).promise
     return {
       pdf: loadPDF,
       numPages: loadPDF.numPages,
     }
   }, [])
-  
-  if (!state.loading && state.value) onLoadSuccess(state.value)
-  
+
   return (
     <Choose>
       <Choose.When condition={state.loading}>
         <h1>Loading 😎</h1>
       </Choose.When>
       <Choose.Otherwise>
-        <ContextProvider value={{ ...state.value }}>{children}</ContextProvider>
+        <ContextProvider value={{ ...state.value, ...props }}>
+          {props.children}
+        </ContextProvider>
       </Choose.Otherwise>
     </Choose>
   )

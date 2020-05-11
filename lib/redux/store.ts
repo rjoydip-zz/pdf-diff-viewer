@@ -4,12 +4,12 @@ import createStore from 'unistore'
 
 const ref = {
   file: null,
-  img: null,
+  image: null,
   numPages: 0,
 }
 
 const initialState = {
-  pageNumber: 0,
+  pageNumber: 1,
   compare: ref,
   original: ref,
   difference: ref,

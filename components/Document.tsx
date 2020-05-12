@@ -8,8 +8,9 @@ import {
   isFile,
   loadFromFile,
 } from '../utils'
-import { ContextProvider, Choose } from './extras'
-import { useAsync } from '../hooks'
+import { useViewerDispatch } from './ViewerContext'
+import { ViewerTypes } from '../lib/redux/types'
+import { useCallback } from 'react'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
 
@@ -49,6 +50,7 @@ const findDocumentSource = async (file: any) => {
       return { data: await loadFromFile(file) }
     }
   }
+
   // At this point, file must be an object
   if (typeof file !== 'object') {
     throw new Error(
@@ -77,27 +79,22 @@ const findDocumentSource = async (file: any) => {
 }
 
 const Document = (props: any) => {
-  const state = useAsync<any>(async () => {
-    const { data } = await findDocumentSource(props.file)
+  const { id, file } = props
+  const dispatch = useViewerDispatch()
+  const fn = useCallback(async () => {
+    const { data } = await findDocumentSource(file)
     const loadPDF = await pdfjs.getDocument(data).promise
-    return {
-      pdf: loadPDF,
-      numPages: loadPDF.numPages,
-    }
+    dispatch({
+      type: ViewerTypes.SET_PDF_AND_PAGES,
+      payload: {
+        id,
+        pdf: loadPDF,
+        numPages: loadPDF.numPages,
+      },
+    })
   }, [])
-
-  return (
-    <Choose>
-      <Choose.When condition={state.loading}>
-        <h1>Loading 😎</h1>
-      </Choose.When>
-      <Choose.Otherwise>
-        <ContextProvider value={{ ...state.value, ...props }}>
-          {props.children}
-        </ContextProvider>
-      </Choose.Otherwise>
-    </Choose>
-  )
+  fn()
+  return <div>{props.children}</div>
 }
 
 export default Document

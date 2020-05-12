@@ -1,4 +1,31 @@
-// REDUX ACTION TYPES
-export const INCREMENT_PAGE_NUMBER = 'INCREMENT_PAGE_NUMBER'
-export const DECREMENT_PAGE_NUMBER = 'DECREMENT_PAGE_NUMBER'
-export const INITILIZE_NUMBER_PAGES = 'INITILIZE_NUMBER_PAGES'
+export enum ViewerTypes {
+  SET_FILE = 'SET_FILE',
+  SET_PAGE_NUMBER = 'SET_PAGE_NUMBER',
+  SET_PDF_AND_PAGES = 'SET_PDF_AND_PAGES',
+}
+
+interface NestedInterface {
+  pdf: any
+  image: any
+  numPages: number
+}
+
+export interface ContextInterface {
+  pageNumber: number
+  original: NestedInterface
+  compare: NestedInterface
+}
+
+export type ViewerActionTypes =
+  | {
+      type: typeof ViewerTypes.SET_FILE
+      payload: any
+    }
+  | {
+      type: typeof ViewerTypes.SET_PAGE_NUMBER
+      payload: any
+    }
+  | {
+      type: typeof ViewerTypes.SET_PDF_AND_PAGES
+      payload: any
+    }

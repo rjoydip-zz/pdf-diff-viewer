@@ -11,9 +11,6 @@ interface Props {
   Component: any
   pageProps: any
 }
-const store = createStore()
-if (process.env.NODE_ENV !== 'production')
-  store.subscribe((state) => console.log(state))
 
 function MyApp({ Component, pageProps }: Props) {
   return (
@@ -56,9 +53,7 @@ function MyApp({ Component, pageProps }: Props) {
           Your browser does not support JavaScript!
         </noscript>
       </Head>
-      <Provider store={store}>
-        <Component {...styles} {...pageProps} />
-      </Provider>
+      <Component {...styles} {...pageProps} />
     </>
   )
 }

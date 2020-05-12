@@ -1,15 +1,13 @@
-import createStore from 'unistore'
-
-const ref = {
-  file: null,
-  image: null,
+const nestedState = {
+  pdf: null,
   numPages: 0,
+  image: null,
 }
 
 const initialState = {
-  pageNumber: 1,
-  compare: ref,
-  original: ref,
+  pageNumber: 0,
+  original: nestedState,
+  compare: nestedState,
 }
 
-export default () => createStore(initialState)
+export default initialState

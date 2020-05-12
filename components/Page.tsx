@@ -31,7 +31,6 @@ const PageInternal = ({
 }: PageProps & ContextInterface) => {
   const fn = async (canvasRef: any) => {
     const ctx = canvasRef.getContext('2d')
-    const image = exportImage ? canvasRef.toDataURL() : null
     canvasRef.style.width = `${Math.floor(width)}${unit || 'px'}`
     canvasRef.style.height = `${Math.floor(height)}${unit || 'px'}`
     try {
@@ -53,7 +52,7 @@ const PageInternal = ({
         onLoadSuccess({
           pdf: {
             page,
-            image,
+            image: exportImage ? canvasRef.toDataURL() : null,
           },
           numPages,
           canvas: canvasRef,
@@ -61,11 +60,17 @@ const PageInternal = ({
     } catch (error) {
       const serialized = serializeError(error)
       if (serialized.message === 'Invalid page request') {
-        ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
-        ctx.textAlign = 'center'
-        ctx.font = "10px Arial";
-        ctx.fillText('No page found', canvasRef.width / 2, canvasRef.height / 2)
+        ctx.clearRect(0, 0, canvasRef.width, canvasRef.height)
       }
+      onLoadSuccess &&
+        onLoadSuccess({
+          pdf: {
+            page: null,
+            image: null,
+          },
+          numPages: 0,
+          canvas: canvasRef,
+        })
       onLoadError && onLoadError(error)
     }
   }

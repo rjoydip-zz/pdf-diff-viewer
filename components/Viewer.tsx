@@ -7,36 +7,43 @@ import { Uploader } from './Uploader'
 import Document from './Document'
 import Page from './Page'
 import { Choose, If } from './extras'
-import { useAsync } from '../hooks'
 import { imageDiff } from '../lib/diff'
+import { useEffect, useState } from 'react'
 
 const DiffViewer = connect(
-  ['original', 'compare'],
+  ['original', 'compare', 'pageNumber'],
   actions
-)(({ original, compare }: any) => {
-  console.log(555)
-  const { value } = useAsync<any>(async () => {
-    const orgImg = original.image
-    const comImg = compare.image
-    let image = null
-    console.log('XXX', (orgImg && comImg))
-    if (orgImg && comImg) {
-      image = await imageDiff({
-        original: orgImg,
-        compare: comImg,
-        returnBase64: true,
-      })
-    }
+)(({ original, compare, pageNumber }: any) => {
+  const [image, setImage] = useState('')
+  const orgImg = original.image
+  const comImg = compare.image
 
-    return {
-      image,
-    }
-  })
-  console.log('DiffViewer', value)
+  useEffect(() => {
+    ;(async () => {
+      if (!!(orgImg && comImg)) {
+        setImage(
+          await imageDiff<any>({
+            original: orgImg,
+            compare: comImg,
+            returnBase64: true,
+          })
+        )
+      }
+
+      if (!!orgImg && !comImg) {
+        setImage(orgImg)
+      }
+
+      if (!orgImg && !!comImg) {
+        setImage(comImg)
+      }
+    })()
+  }, [original, compare, pageNumber])
+
   return (
-    <If condition={!!value}>
+    <If condition={image !== ''}>
       <img
-        src={value && value.image}
+        src={image}
         alt={''}
         height={300}
         width={300}
@@ -73,34 +80,28 @@ const PageNavigate = connect(
   }
 )
 
-const DocumentPage = connect(
-  ['pageNumber'],
-  actions
-)(({ pageNumber }: any) => {
-  return <Page pageNumber={pageNumber} exportImage={true} />
-})
-
 const CompareViewer = connect(
-  ['compare'],
+  ['compare', 'pageNumber'],
   actions
-)(({ compare, setFile, setInfo }: any) => {
-  console.log(333)
+)(({ compare, pageNumber, setFile, setInfo }: any) => {
+  const id = 'compare'
+  const ref = compare
   return (
     <Choose>
-      <Choose.When condition={!!compare.file}>
+      <Choose.When condition={!!ref.file}>
         <Document
-          file={compare.file}
+          file={ref.file}
           className="outline-none shadow-lg max-h-xs max-w-xs"
           onLoadSuccess={({ numPages, pdf }: any) => {
-            setInfo({ id: 'compare', numPages, image: pdf.image })
+            setInfo({ id, numPages, image: pdf.image })
           }}
         >
-          <DocumentPage />
+          <Page pageNumber={pageNumber} exportImage={true} />
         </Document>
       </Choose.When>
       <Choose.Otherwise>
         <Uploader
-          onUpload={(file: FileReader) => setFile({ id: 'compare', file })}
+          onUpload={(file: FileReader) => setFile({ id, file })}
           className="p-6 text-center text-sm border-solid outline-none shadow-lg"
         />
       </Choose.Otherwise>
@@ -109,26 +110,27 @@ const CompareViewer = connect(
 })
 
 const OriginalViewer = connect(
-  ['original'],
+  ['original', 'pageNumber'],
   actions
-)(({ original, setFile, setInfo }: any) => {
-  console.log(222)
+)(({ original, pageNumber, setFile, setInfo }: any) => {
+  const id = 'original'
+  const ref = original
   return (
     <Choose>
-      <Choose.When condition={!!original.file}>
+      <Choose.When condition={!!ref.file}>
         <Document
-          file={original.file}
+          file={ref.file}
           className="outline-none shadow-lg max-h-xs max-w-xs"
           onLoadSuccess={({ numPages, pdf }: any) => {
-            setInfo({ id: 'original', numPages, image: pdf.image })
+            setInfo({ id, numPages, image: pdf.image })
           }}
         >
-          <DocumentPage />
+          <Page pageNumber={pageNumber} exportImage={true} />
         </Document>
       </Choose.When>
       <Choose.Otherwise>
         <Uploader
-          onUpload={(file: FileReader) => setFile({ id: 'original', file })}
+          onUpload={(file: FileReader) => setFile({ id, file })}
           className="p-6 text-center text-sm border-solid outline-none shadow-lg"
         />
       </Choose.Otherwise>
@@ -137,18 +139,17 @@ const OriginalViewer = connect(
 })
 
 const Viewer: NextPage<{}> = () => {
-  console.log(111)
   return (
     <div className="flex flex-col">
       <div className="flex flex-row justify-center m-2">
         <OriginalViewer />
         <CompareViewer />
       </div>
-      <div className="flex flex-row justify-center m-2">
-        <DiffViewer />
-      </div>
       <div className="flex flex-row justify-center">
         <PageNavigate />
+      </div>
+      <div className="flex flex-row justify-center m-2">
+        <DiffViewer />
       </div>
     </div>
   )

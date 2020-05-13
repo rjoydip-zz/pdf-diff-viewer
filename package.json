@@ -8,11 +8,10 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "pre-deploy": "yarn clean && yarn build-css && yarn lint && yarn build",
+    "pre-deploy": "yarn clean && yarn build-css-prod && yarn lint && yarn build",
     "clean": "rm -rf .next && rm -rf node_modules/.cache",
     "build-css": "postcss tailwind.css -o index.css",
-    "build-css-prod": "cross-env NODE_ENV=production postcss tailwind.css -o index.css",
-    "watch-css": "postcss tailwind.css -o index.css -w"
+    "build-css-prod": "cross-env NODE_ENV=production postcss tailwind.css -o index.css"
   },
   "dependencies": {
     "immer": "^6.0.5",
@@ -38,6 +37,7 @@
     "@types/styled-components": "5.0.1",
     "autoprefixer": "^9.7.6",
     "babel-plugin-styled-components": "^1.10.0",
+    "cross-env": "^7.0.2",
     "cssnano": "^4.1.10",
     "husky": "^4.2.5",
     "next-compose-plugins": "^2.2.0",

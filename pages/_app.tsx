@@ -1,19 +1,14 @@
 import React from 'react'
 import Head from 'next/head'
-import { Provider } from 'unistore/react'
 
 import pkg from '../package.json'
 import styles from '../index.css'
-import createStore from '../lib/redux/store'
 
 interface Props {
   store: any
   Component: any
   pageProps: any
 }
-const store = createStore()
-if (process.env.NODE_ENV !== 'production')
-  store.subscribe((state) => console.log(state))
 
 function MyApp({ Component, pageProps }: Props) {
   return (
@@ -56,9 +51,7 @@ function MyApp({ Component, pageProps }: Props) {
           Your browser does not support JavaScript!
         </noscript>
       </Head>
-      <Provider store={store}>
-        <Component {...styles} {...pageProps} />
-      </Provider>
+      <Component {...styles} {...pageProps} />
     </>
   )
 }

@@ -2,8 +2,8 @@ import dynamic from 'next/dynamic'
 import React, { useEffect } from 'react'
 import { Title } from '../components/styles'
 
-const Viewer = dynamic(() => import('../components/Viewer'))
 const Layout = dynamic(() => import('../components/Layout'))
+const Viewer = dynamic(() => import('../components/Viewer'))
 
 export default () => {
   useEffect(() => {

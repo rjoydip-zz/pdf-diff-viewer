@@ -1,10 +1,8 @@
 import React from 'react'
 import Head from 'next/head'
-import { Provider } from 'unistore/react'
 
 import pkg from '../package.json'
 import styles from '../index.css'
-import createStore from '../lib/redux/store'
 
 interface Props {
   store: any

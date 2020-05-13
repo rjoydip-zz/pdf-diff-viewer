@@ -17,5 +17,4 @@ jobs:
       - name: Clean, Lint, Build
         run: |
           yarn
-          yarn lint
-          yarn build
+          yarn pre-deploy

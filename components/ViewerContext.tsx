@@ -1,7 +1,6 @@
 import { useContext, useReducer, createContext } from 'react'
 import { viewerReducer } from '../lib/redux/reducer'
 import initialState from '../lib/redux/store'
-import { ViewerActionTypes } from '../lib/redux/types'
 
 const StateContext = createContext<any>({})
 const DispatchContext = createContext<any>({})
